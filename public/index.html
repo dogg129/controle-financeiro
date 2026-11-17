@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Finanças da casa</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topo">
+    <div class="conteudo">
+      <h1 class="marca">Finanças da casa</h1>
+      <nav id="menu" aria-label="Seções do sistema">
+        <a href="#painel">Painel</a>
+        <a href="#receitas">Receitas</a>
+        <a href="#despesas">Despesas</a>
+        <a href="#contas">Contas</a>
+        <a href="#relatorio">Relatório mensal</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="conteudo">
+    <p class="aviso" id="aviso" role="alert" hidden></p>
+
+    <!-- 1. Painel inicial -->
+    <section class="pagina" id="painel" aria-labelledby="t-painel">
+      <h2 id="t-painel">Painel</h2>
+
+      <div class="saldo-bloco">
+        <p class="rotulo">Saldo disponível</p>
+        <p class="saldo" id="p-saldo">R$ 0,00</p>
+      </div>
+
+      <div class="indicadores">
+        <div class="indicador">
+          <span class="rotulo">Total de receitas</span>
+          <strong class="pos" id="p-receitas">R$ 0,00</strong>
+        </div>
+        <div class="indicador">
+          <span class="rotulo">Total de despesas</span>
+          <strong class="neg" id="p-despesas">R$ 0,00</strong>
+        </div>
+      </div>
+
+      <div class="bloco">
+        <h3>Contas pendentes</h3>
+        <p class="sub" id="p-pendentes-resumo"></p>
+        <ul class="lista" id="p-contas"></ul>
+        <p><a href="#contas">Ver todas as contas</a></p>
+      </div>
+    </section>
+
+    <!-- 2. Cadastro de receitas -->
+    <section class="pagina" id="receitas" aria-labelledby="t-receitas" hidden>
+      <h2 id="t-receitas">Receitas</h2>
+      <form class="form-linha" data-tipo="receita" aria-label="Cadastrar receita">
+        <label class="campo largo">Descrição
+          <input name="descricao" maxlength="120" required autocomplete="off" placeholder="Ex.: Salário de novembro">
+        </label>
+        <label class="campo">Valor (R$)
+          <input name="valor" type="number" min="0.01" step="0.01" inputmode="decimal" required>
+        </label>
+        <label class="campo">Data
+          <input name="data" type="date" required>
+        </label>
+        <label class="campo">Tipo de renda
+          <select name="categoria">
+            <option>Salário</option>
+            <option>Renda extra</option>
+          </select>
+        </label>
+        <button class="botao" type="submit">Adicionar receita</button>
+        <p class="mensagem" role="status"></p>
+      </form>
+
+      <p class="total-linha">Total de receitas <strong class="pos" data-total="receita">R$ 0,00</strong></p>
+      <ul class="lista" data-lista="receita"></ul>
+    </section>
+
+    <!-- 3. Cadastro de despesas -->
+    <section class="pagina" id="despesas" aria-labelledby="t-despesas" hidden>
+      <h2 id="t-despesas">Despesas</h2>
+      <form class="form-linha" data-tipo="despesa" aria-label="Cadastrar despesa">
+        <label class="campo largo">Descrição
+          <input name="descricao" maxlength="120" required autocomplete="off" placeholder="Ex.: Conta de luz">
+        </label>
+        <label class="campo">Valor (R$)
+          <input name="valor" type="number" min="0.01" step="0.01" inputmode="decimal" required>
+        </label>
+        <label class="campo">Data
+          <input name="data" type="date" required>
+        </label>
+        <label class="campo">Categoria
+          <select name="categoria">
+            <option>Água</option>
+            <option>Luz</option>
+            <option>Alimentação</option>
+            <option>Internet</option>
+            <option>Moradia</option>
+            <option>Outros</option>
+          </select>
+        </label>
+        <button class="botao" type="submit">Adicionar despesa</button>
+        <p class="mensagem" role="status"></p>
+      </form>
+
+      <p class="total-linha">Total de despesas <strong class="neg" data-total="despesa">R$ 0,00</strong></p>
+      <ul class="lista" data-lista="despesa"></ul>
+    </section>
+
+    <!-- 4. Controle de contas -->
+    <section class="pagina" id="contas" aria-labelledby="t-contas" hidden>
+      <h2 id="t-contas">Contas a pagar</h2>
+      <form class="form-linha" id="form-conta" aria-label="Cadastrar conta a pagar">
+        <label class="campo largo">Descrição
+          <input name="descricao" maxlength="120" required autocomplete="off" placeholder="Ex.: Internet de dezembro">
+        </label>
+        <label class="campo">Valor (R$)
+          <input name="valor" type="number" min="0.01" step="0.01" inputmode="decimal" required>
+        </label>
+        <label class="campo">Vencimento
+          <input name="vencimento" type="date" required>
+        </label>
+        <button class="botao" type="submit">Adicionar conta</button>
+        <p class="mensagem" role="status"></p>
+      </form>
+
+      <p class="total-linha">Pendentes <strong class="neg" id="c-pendentes">R$ 0,00</strong></p>
+      <p class="dica">Ao marcar uma conta como paga, o valor entra nas despesas. Ao voltar para pendente, ele sai.</p>
+      <ul class="lista" id="c-lista"></ul>
+    </section>
+
+    <!-- 5. Relatório mensal -->
+    <section class="pagina" id="relatorio" aria-labelledby="t-relatorio" hidden>
+      <h2 id="t-relatorio">Relatório mensal</h2>
+
+      <div class="mes-nav">
+        <button type="button" class="botao-sec" id="mes-anterior" aria-label="Mês anterior">&lsaquo;</button>
+        <span class="mes-rotulo" id="mes-rotulo" aria-live="polite"></span>
+        <button type="button" class="botao-sec" id="mes-seguinte" aria-label="Próximo mês">&rsaquo;</button>
+      </div>
+
+      <div class="indicadores tres">
+        <div class="indicador">
+          <span class="rotulo">Dinheiro recebido</span>
+          <strong class="pos" id="r-recebido">R$ 0,00</strong>
+        </div>
+        <div class="indicador">
+          <span class="rotulo">Dinheiro gasto</span>
+          <strong class="neg" id="r-gasto">R$ 0,00</strong>
+        </div>
+        <div class="indicador destaque">
+          <span class="rotulo">Quanto sobrou</span>
+          <strong id="r-sobrou">R$ 0,00</strong>
+        </div>
+      </div>
+
+      <div class="bloco">
+        <h3>Despesas por categoria</h3>
+        <ul class="categorias" id="r-categorias"></ul>
+      </div>
+
+      <div class="bloco">
+        <h3>Movimentos do mês</h3>
+        <ul class="lista" id="r-movimentos"></ul>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

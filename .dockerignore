@@ -1,0 +1,21 @@
+# Controle de versão e editor
+.git
+.gitignore
+.vscode
+.idea
+
+# Segredos e configuração local (nunca devem entrar na imagem)
+.env
+.env.*
+!.env.example
+
+# Dependências locais e logs (a imagem instala as suas próprias)
+node_modules
+npm-debug.log*
+
+# Arquivos que não são necessários dentro da imagem
+Dockerfile
+.dockerignore
+docker-compose*.yml
+*.md
+*.zip

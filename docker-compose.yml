@@ -1,0 +1,63 @@
+name: controle-financeiro
+
+services:
+  app:
+    # "image" = onde o Compose baixa a imagem (Docker Hub); "build" = como gerá-la localmente.
+    image: ${DOCKERHUB_USER:?defina DOCKERHUB_USER no .env}/controle-financeiro:1.0
+    build:
+      context: .
+    container_name: cf_app
+    restart: unless-stopped
+    init: true               # processo "init" (tini): repassa sinais e evita processos zumbis
+    ports:
+      - "8000:8000"          # HOST:CONTAINER -> http://localhost:8000
+    environment:
+      DB_HOST: db            # nome do serviço = nome DNS na rede backend
+      DB_PORT: "5432"
+      DB_NAME: ${POSTGRES_DB:?defina POSTGRES_DB no .env}
+      DB_USER: ${POSTGRES_USER:?defina POSTGRES_USER no .env}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no .env}
+    depends_on:
+      db:
+        condition: service_healthy   # só inicia a app com o banco aceitando conexões
+    networks:
+      - frontend
+      - backend
+    # Endurecimento de segurança
+    read_only: true                  # sistema de arquivos do container somente leitura
+    tmpfs:
+      - /tmp                         # único local gravável (memória, descartável)
+    cap_drop:
+      - ALL                          # remove todas as capabilities do Linux
+    security_opt:
+      - no-new-privileges:true
+
+  db:
+    image: postgres:16-alpine
+    container_name: cf_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?defina POSTGRES_DB no .env}
+      POSTGRES_USER: ${POSTGRES_USER:?defina POSTGRES_USER no .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data   # NAMED VOLUME: os dados sobrevivem ao "down"
+    networks:
+      - backend                          # sem "ports": o banco não é acessível pelo host
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  frontend:
+    driver: bridge       # rede onde a porta é publicada para o host
+  backend:
+    driver: bridge
+    internal: true       # isolada: sem acesso à internet nem ao host; só app <-> db
+
+volumes:
+  pgdata:                # volume nomeado gerenciado pelo Docker
