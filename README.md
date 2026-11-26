@@ -111,13 +111,6 @@ Esse teste comprova a persistência no volume `pgdata`. Para zerar os dados inte
 - `/api/contas` — listar e cadastrar contas; as rotas também permitem atualizar o pagamento e remover contas.
 - `GET /api/relatorio?mes=AAAA-MM` — relatório de um mês.
 
-## Roteiro sugerido para a apresentação
-
-1. Apresentar o problema resolvido, as funcionalidades e o modelo de dados.
-2. Explicar por que Compose coordena serviços, redes, dependências e volumes em um único arquivo.
-3. Mostrar `Dockerfile` e `docker-compose.yml`, destacando `DB_HOST=db`, a rede interna e o volume `pgdata`.
-4. Demonstrar a aplicação e executar a prova de persistência descrita acima.
-
 ## Estrutura do projeto
 
 ```text
